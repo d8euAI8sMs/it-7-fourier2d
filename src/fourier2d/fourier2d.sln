@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fourier2d", "fourier2d.vcxproj", "{B8F94E73-43A1-4AB4-BFD9-110FA6294F0D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util-cpp-common", "..\..\lib\util-cpp-common\src\util-cpp-common.vcxproj", "{9E8371D6-EAAB-42C2-B488-865A8216BDCC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8F94E73-43A1-4AB4-BFD9-110FA6294F0D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B8F94E73-43A1-4AB4-BFD9-110FA6294F0D}.Debug|Win32.Build.0 = Debug|Win32
+		{B8F94E73-43A1-4AB4-BFD9-110FA6294F0D}.Release|Win32.ActiveCfg = Release|Win32
+		{B8F94E73-43A1-4AB4-BFD9-110FA6294F0D}.Release|Win32.Build.0 = Release|Win32
+		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Debug|Win32.Build.0 = Debug|Win32
+		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Release|Win32.ActiveCfg = Release|Win32
+		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
