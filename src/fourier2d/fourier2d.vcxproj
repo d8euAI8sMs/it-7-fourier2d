@@ -105,6 +105,9 @@
   <ItemGroup>
     <ClInclude Include="fourier2d.h" />
     <ClInclude Include="fourier2dDlg.h" />
+    <ClInclude Include="ImgViewer.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="RandomSignalParams.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -112,6 +115,8 @@
   <ItemGroup>
     <ClCompile Include="fourier2d.cpp" />
     <ClCompile Include="fourier2dDlg.cpp" />
+    <ClCompile Include="ImgViewer.cpp" />
+    <ClCompile Include="RandomSignalParams.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -125,6 +130,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\fourier2d.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\util-cpp-common\src\util-cpp-common.vcxproj">
+      <Project>{9e8371d6-eaab-42c2-b488-865a8216bdcc}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
