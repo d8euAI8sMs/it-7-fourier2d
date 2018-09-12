@@ -64,4 +64,5 @@ public:
     afx_msg void OnBnClickedButton9();
     BOOL m_logScale;
     afx_msg void OnBnClickedCheck1();
+    CStatic m_quality;
 };

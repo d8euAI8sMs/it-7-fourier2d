@@ -45,6 +45,7 @@ void CFourier2dDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Text(pDX, IDC_EDIT1, m_noise);
     DDX_Control(pDX, IDC_SLIDER1, m_filterRadiusSlider);
     DDX_Check(pDX, IDC_CHECK1, m_logScale);
+    DDX_Control(pDX, IDC_QUALITY, m_quality);
 }
 
 BEGIN_MESSAGE_MAP(CFourier2dDlg, CSimulationDialog)
@@ -425,6 +426,29 @@ void CFourier2dDlg::OnBnClickedFilter()
     m_model.stage = model::stage_final;
     
     m_image.RedrawWindow();
+
+    double enow = 0, ewas = 0;
+    double now = 0, was = 0;
+
+    for (size_t i = 0; i < m_model.filtered.h; ++i)
+    for (size_t j = 0; j < m_model.filtered.w; ++j)
+    {
+        ewas += m_model.source.data[i][j].re * m_model.source.data[i][j].re;
+        enow += m_model.filtered.data[i][j].re * m_model.filtered.data[i][j].re;
+    }
+
+    for (size_t i = 0; i < m_model.filtered.h; ++i)
+    for (size_t j = 0; j < m_model.filtered.w; ++j)
+    {
+        now += math::sqnorm(m_model.filtered.data[i][j].re / enow * ewas - m_model.source.data[i][j].re);
+        was += math::sqnorm(m_model.noised.data[i][j].re - m_model.source.data[i][j].re);
+    }
+
+    now /= m_model.filtered.h * m_model.filtered.w;
+    was /= m_model.filtered.h * m_model.filtered.w;
+
+    CString buf; buf.Format(TEXT("%lf, was %lf"), std::sqrt(now), std::sqrt(was));
+    m_quality.SetWindowText(buf);
 }
 
 
