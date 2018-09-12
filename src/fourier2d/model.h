@@ -167,6 +167,13 @@ namespace model
             bmp.SetBitmapDimension(w, h);
             return *this;
         }
+        bitmap & log(double n)
+        {
+            for (size_t i = 0; i < h; ++i)
+            for (size_t j = 0; j < w; ++j)
+                data[i][j] = std::log10(math::sqnorm(data[i][j]) / n / n);
+            return *this;
+        }
         bitmap & from_cbitmap(CBitmap & bmp)
         {
             BITMAP bmpd;

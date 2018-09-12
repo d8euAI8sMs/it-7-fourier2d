@@ -62,4 +62,6 @@ public:
     SignalParams m_signalParams;
     afx_msg void OnBnClickedButton8();
     afx_msg void OnBnClickedButton9();
+    BOOL m_logScale;
+    afx_msg void OnBnClickedCheck1();
 };

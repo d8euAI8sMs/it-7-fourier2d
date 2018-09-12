@@ -27,6 +27,7 @@ CFourier2dDlg::CFourier2dDlg(CWnd* pParent /*=NULL*/)
     , m_resizeType(0)
     , m_noise(0)
     , m_signalParams({ SignalParams::SQUARE, {1,1}, {0.1,0.5}, {0.1,0.5}, {108,108} })
+    , m_logScale(FALSE)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     m_model.params = model::make_default_parameters();
@@ -43,6 +44,7 @@ void CFourier2dDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_RADIO1, m_resizeType);
     DDX_Text(pDX, IDC_EDIT1, m_noise);
     DDX_Control(pDX, IDC_SLIDER1, m_filterRadiusSlider);
+    DDX_Check(pDX, IDC_CHECK1, m_logScale);
 }
 
 BEGIN_MESSAGE_MAP(CFourier2dDlg, CSimulationDialog)
@@ -63,6 +65,7 @@ BEGIN_MESSAGE_MAP(CFourier2dDlg, CSimulationDialog)
     ON_BN_CLICKED(IDC_BUTTON6, &CFourier2dDlg::OnBnClickedFilter)
     ON_BN_CLICKED(IDC_BUTTON8, &CFourier2dDlg::OnBnClickedButton8)
     ON_BN_CLICKED(IDC_BUTTON9, &CFourier2dDlg::OnBnClickedButton9)
+    ON_BN_CLICKED(IDC_CHECK1, &CFourier2dDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -295,18 +298,22 @@ void CFourier2dDlg::OnBnClickedApply()
 
     m_model.fourier.fourier_of(bmp);
 
+    auto tmp = m_model.fourier;
+
+    tmp.rearrange();
+    if (m_logScale) tmp.log(1);
+
     double d = 0;
-    for (size_t i = 0; i < m_model.fourier.h; ++i)
-    for (size_t j = 0; j < m_model.fourier.w; ++j)
+    for (size_t i = 0; i < tmp.h; ++i)
+    for (size_t j = 0; j < tmp.w; ++j)
     {
-        if (i == 0 && j == 0 || i == m_model.fourier.h && j == m_model.fourier.w ||
-            i == m_model.fourier.h && j == 0 || i == 0 && j == m_model.fourier.w) continue;
-        d += math::sqnorm(m_model.fourier.data[i][j]);
+        if (i == 0 && j == 0 || i + 1 == tmp.h && j + 1 == tmp.w ||
+            i + 1 == tmp.h && j == 0 || i == 0 && j + 1 == tmp.w) continue;
+        if (!m_logScale) d += math::sqnorm(tmp.data[i][j]);
+        else d = std::fmax(d, tmp.data[i][j].re);
     }
-    d /= m_model.fourier.h * m_model.fourier.w;
-    m_model.fourier.rearrange()
-                   .to_cbitmap(m_model.cfourier, std::sqrt(d), true)
-                   .rearrange();
+    if (!m_logScale) d /= tmp.h * tmp.w;
+    tmp.to_cbitmap(m_model.cfourier, std::sqrt(d), !m_logScale);
     m_model.stage = model::stage_fourier;
     m_fourier.RedrawWindow();
 
@@ -446,4 +453,10 @@ void CFourier2dDlg::OnBnClickedButton9()
         m_model.stage != model::stage_final) return;
     CImgViewer v(this, &m_model.cfourier);
     v.DoModal();
+}
+
+
+void CFourier2dDlg::OnBnClickedCheck1()
+{
+    OnBnClickedApply();
 }
