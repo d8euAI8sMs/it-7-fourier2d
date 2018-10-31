@@ -171,7 +171,7 @@ namespace model
         {
             for (size_t i = 0; i < h; ++i)
             for (size_t j = 0; j < w; ++j)
-                data[i][j] = std::log10(math::sqnorm(data[i][j]) / n / n);
+                data[i][j] = std::log10(1 + math::norm(data[i][j]) / n);
             return *this;
         }
         bitmap & from_cbitmap(CBitmap & bmp)

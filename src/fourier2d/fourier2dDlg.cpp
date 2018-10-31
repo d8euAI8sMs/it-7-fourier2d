@@ -310,10 +310,8 @@ void CFourier2dDlg::OnBnClickedApply()
     {
         if (i == 0 && j == 0 || i + 1 == tmp.h && j + 1 == tmp.w ||
             i + 1 == tmp.h && j == 0 || i == 0 && j + 1 == tmp.w) continue;
-        if (!m_logScale) d += math::sqnorm(tmp.data[i][j]);
-        else d = std::fmax(d, tmp.data[i][j].re);
+        d = std::fmax(d, tmp.data[i][j].re);
     }
-    if (!m_logScale) d /= tmp.h * tmp.w;
     tmp.to_cbitmap(m_model.cfourier, std::sqrt(d), !m_logScale);
     m_model.stage = model::stage_fourier;
     m_fourier.RedrawWindow();
