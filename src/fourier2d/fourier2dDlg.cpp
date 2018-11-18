@@ -28,6 +28,7 @@ CFourier2dDlg::CFourier2dDlg(CWnd* pParent /*=NULL*/)
     , m_noise(0)
     , m_signalParams({ SignalParams::SQUARE, {1,1}, {0.1,0.5}, {0.1,0.5}, {108,108} })
     , m_logScale(FALSE)
+    , m_bButterworth(FALSE)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     m_model.params = model::make_default_parameters();
@@ -46,6 +47,7 @@ void CFourier2dDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_SLIDER1, m_filterRadiusSlider);
     DDX_Check(pDX, IDC_CHECK1, m_logScale);
     DDX_Control(pDX, IDC_QUALITY, m_quality);
+    DDX_Check(pDX, IDC_CHECK2, m_bButterworth);
 }
 
 BEGIN_MESSAGE_MAP(CFourier2dDlg, CSimulationDialog)
@@ -67,6 +69,7 @@ BEGIN_MESSAGE_MAP(CFourier2dDlg, CSimulationDialog)
     ON_BN_CLICKED(IDC_BUTTON8, &CFourier2dDlg::OnBnClickedButton8)
     ON_BN_CLICKED(IDC_BUTTON9, &CFourier2dDlg::OnBnClickedButton9)
     ON_BN_CLICKED(IDC_CHECK1, &CFourier2dDlg::OnBnClickedCheck1)
+    ON_BN_CLICKED(IDC_CHECK2, &CFourier2dDlg::OnBnClickedCheck2)
 END_MESSAGE_MAP()
 
 
@@ -85,7 +88,7 @@ BOOL CFourier2dDlg::OnInitDialog()
 
     m_filterRadiusSlider.SetRange(0, 1000, TRUE);
     m_filterRadiusSlider.SetPos(500);
-    m_filterRadius = 0.5;
+    m_filterRadius = 1;
 
     auto c1 = [this] (CDC & dc, const plot::viewport & vp)
     {
@@ -189,7 +192,7 @@ void CFourier2dDlg::OnSimulation()
 void CFourier2dDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
     int pos = m_filterRadiusSlider.GetPos();
-    m_filterRadius = pos / 1000.0;
+    m_filterRadius = 2 * pos / 1000.0;
     m_fourier.RedrawWindow();
 
     CSimulationDialog::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -394,26 +397,34 @@ void CFourier2dDlg::OnBnClickedFile()
 
 void CFourier2dDlg::OnBnClickedFilter()
 {
+    UpdateData(TRUE);
+
     if (m_model.stage != model::stage_fourier &&
         m_model.stage != model::stage_final) return;
 
     size_t fr = m_filterRadius * m_model.fourier.h / 2;
 
     auto tmp = m_model.fourier;
+    tmp.rearrange();
     for (size_t i = 0; i < m_model.fourier.h; ++i)
     for (size_t j = 0; j < m_model.fourier.w; ++j)
     {
-        double d = i * i + j * j;
-        if (d < fr * fr) continue;
-        d = (m_model.fourier.h - i) * (m_model.fourier.h - i) + j * j;
-        if (d < fr * fr) continue;
-        d = i * i + (m_model.fourier.w - j) * (m_model.fourier.w - j);
-        if (d < fr * fr) continue;
-        d = (m_model.fourier.h - i) * (m_model.fourier.h - i) +
-            (m_model.fourier.w - j) * (m_model.fourier.w - j);
-        if (d < fr * fr) continue;
-        tmp.data[i][j] = 0;
+        double r =
+            ((int)i - m_model.fourier.h / 2) * ((int)i - m_model.fourier.h / 2) +
+            ((int)j - m_model.fourier.w / 2) * ((int)j - m_model.fourier.w / 2);
+        if (!m_bButterworth)
+        {
+            if (r > fr) tmp.data[i][j] = 0;
+        }
+        else
+        {
+            /* Gaussian */
+            //tmp.data[i][j] = tmp.data[i][j] * std::exp(-r*r/fr/fr/2);
+            /* Butterworth (n = 1), better */
+            tmp.data[i][j] = tmp.data[i][j] / (1 + r*r/fr/fr);
+        }
     }
+    tmp.rearrange();
 
     m_model.filtered.fourier_of(tmp, true);
     if (m_resizeType == 0)
@@ -481,4 +492,10 @@ void CFourier2dDlg::OnBnClickedButton9()
 void CFourier2dDlg::OnBnClickedCheck1()
 {
     OnBnClickedApply();
+}
+
+
+void CFourier2dDlg::OnBnClickedCheck2()
+{
+    OnBnClickedFilter();
 }

@@ -65,4 +65,6 @@ public:
     BOOL m_logScale;
     afx_msg void OnBnClickedCheck1();
     CStatic m_quality;
+    afx_msg void OnBnClickedCheck2();
+    BOOL m_bButterworth;
 };
