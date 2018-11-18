@@ -273,8 +273,9 @@ void CFourier2dDlg::OnBnClickedApply()
     for (size_t i = 0; i < m_model.source.h; ++i)
     for (size_t j = 0; j < m_model.source.w; ++j)
     {
-        double n = rand() / (RAND_MAX + 1.) - 0.5;
-        m_model.noised.data[i][j].re = n;
+        double n = 0;
+        for (size_t _ = 0; _ < 12; ++_) n += rand() / (RAND_MAX + 1.) - 0.5;
+        m_model.noised.data[i][j].re = n / 12;
         double d = m_model.source.data[i][j].re - m;
         e += d * d;
         en += n * n;
